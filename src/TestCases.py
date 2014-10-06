@@ -26,7 +26,7 @@ Created on May 29, 2014
 # fqdn - string; fully quantifiable domain name
 # metadata - Metadata object; check definition in the Metadata class
 # info - Information object; check definition in the Information class
-# depth - integer; number of certificates in the chain (including server 
+# depth - integer; number of certificates in the chain (including server
 #         certificate but excluding root CA)
 #
 #
@@ -40,7 +40,7 @@ Created on May 29, 2014
 #                      of the target system (usually a SSL/TLS server)
 # CA - certificate authority that acts as a trusted third party in CA-PKI model;
 #      it has the power to sign other certificates
-# root CA - certificate authority that has a self-signed certificate installed 
+# root CA - certificate authority that has a self-signed certificate installed
 #           in the system's trust store
 # intermediate CA - certificate authority that is signed by another CA
 # edge/leaf CA - certificate authority that signs the server certificate
@@ -128,7 +128,7 @@ class InvalidIntegrity(TestCaseImmed):
                 rfc2459.TeletexCommonName(self.fqdnValid.encode('utf-8')));
         return asnObj;
 
-# A certificate that has an unsuitable value in the extended key usage 
+# A certificate that has an unsuitable value in the extended key usage
 # extension (serverAuth=false)
 class InvalidExtendedKeyUsage(TestCaseImmed):
     def __init__(self, fqdn, info):
@@ -165,7 +165,7 @@ class InvalidCriticalExtension(TestCaseImmed):
     def preSign(self, asnObj):
         asnObj.getComponentByPosition(0).getComponentByName('extensions').\
           getComponentByPosition(0).setComponentByName('extnID',\
-          rfc2459.univ.ObjectIdentifier('1.3.6.1.4.1.11129.2.5.1')); 
+          rfc2459.univ.ObjectIdentifier('1.3.6.1.4.1.11129.2.5.1'));
         return asnObj;
 
 # A certificate that is self-signed
@@ -212,7 +212,7 @@ class InvalidIntCAFlag(TestCaseChained):
         self.getFirstCA().getExtension(BasicConstraint).ca = False;
         self.getFirstCA().removeExtension(KeyUsage);
 
-# A valid chain of certificates where the first intermediate CA and edge CA 
+# A valid chain of certificates where the first intermediate CA and edge CA
 # have basic constraint extensions that include pathLen of 5 and 0, respectively
 class ValidIntCALen(TestCaseChained):
     def __init__(self, fqdn, info):
@@ -307,19 +307,19 @@ class InvalidIntCASelfSign(TestCaseChained):
 # A valid wildcard certificate.
 class ValidWildcard(TestCaseWildcard):
     def __init__(self, fqdn, info):
-        metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",\
+        metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",
                                  None, None, True, True);
 
         if (len(fqdn.split('.')) < 3):
-            raise Exception("Input fqdn %s has too few tokens to generate" +\
-                             " wildcard tests" % fqdn);
+            raise Exception("Input fqdn {} has too few components to generate"
+                             " wildcard tests".format(fqdn));
         fqdnArr = fqdn.split('.');
         wildcard = "*." + '.'.join(fqdnArr[1:]);
 
         super(self.__class__, self).__init__(wildcard, metadata, info);
 
 # A wildcard certificate that tries to extend its matching effect to its left.
-# For example, it tries to match www.tls.test with *.test 
+# For example, it tries to match www.tls.test with *.test
 class InvalidWildcardLeft(TestCaseWildcard):
     def __init__(self, fqdn, info):
         metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",\
@@ -330,9 +330,9 @@ class InvalidWildcardLeft(TestCaseWildcard):
 
         super(self.__class__, self).__init__(wildcard, metadata, info);
 
-# A wildcard certificate that has wildcard character in the mid-segment of 
-# the fqdn. 
-# For example, it tries to match www.tls.test with www.*.test 
+# A wildcard certificate that has wildcard character in the mid-segment of
+# the fqdn.
+# For example, it tries to match www.tls.test with www.*.test
 class InvalidWildcardMid(TestCaseWildcard):
     def __init__(self, fqdn, info):
         metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",\
@@ -344,7 +344,7 @@ class InvalidWildcardMid(TestCaseWildcard):
         super(self.__class__, self).__init__(wildcard, metadata, info);
 
 # A wildcard certificate that has wildcard character in the middle of the fqdn.
-# For example, it tries to match www.tls.test with www.*s.test 
+# For example, it tries to match www.tls.test with www.*s.test
 class InvalidWildcardMidMixed(TestCaseWildcard):
     def __init__(self, fqdn, info):
         metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",\
@@ -357,7 +357,7 @@ class InvalidWildcardMidMixed(TestCaseWildcard):
         super(self.__class__, self).__init__(wildcard, metadata, info);
 
 # A wildcard certificate that has wildcard characters in all segments.
-# For example, it tries to match www.tls.test with *.*.* 
+# For example, it tries to match www.tls.test with *.*.*
 class InvalidWildcardAll(TestCaseWildcard):
     def __init__(self, fqdn, info):
         metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",\
@@ -371,7 +371,7 @@ class InvalidWildcardAll(TestCaseWildcard):
         super(self.__class__, self).__init__(wildcard, metadata, info);
 
 # A wildcard certificate that has a single wildcard character.
-# For example, it tries to match www.tls.test with * 
+# For example, it tries to match www.tls.test with *
 class InvalidWildcardSingle(TestCaseWildcard):
     def __init__(self, fqdn, info):
         metadata = TestMetadata(self.__class__.__name__, "RFC6125 6.4.3",\
@@ -488,7 +488,7 @@ class InvalidNameNullAltNameWithSubj(TestCaseAltName):
 
 # Name Constraint Cert Tests #################################################
 
-# A valid chain with a permitted subtree of ".test" in the first intermediate CA 
+# A valid chain with a permitted subtree of ".test" in the first intermediate CA
 # and an excluded subtree of an incorrect fqdn in the second intermediate CA.
 class ValidNameConstraint(TestCaseNameConstraint):
     def __init__(self, fqdn, info):
@@ -519,7 +519,7 @@ class InvalidNameConstraintExclude(TestCaseNameConstraint):
 #         metadata = TestMetadata(self.__class__.__name__, "RFC5280 4.2.1.10",\
 #                                  SEV_MED, EASE_LOW);
 #         super(self.__class__, self).__init__(fqdn, metadata, info);
-# 
+#
 #         self.appendPermit(self.getFirstCA(), "");
 
 # A chain with a permitted subtree of an incorrect fqdn's network name in the
