@@ -8,10 +8,12 @@ The peripheral classes supply information to the TestCase object.
 Created on May 15, 2014
 """
 
-from src.Certificate import *;
+from src.Certificate import *
 
 # Metadata class that describes a test case and controls the behavior of the
 # corresponding connection.
+
+
 class TestMetadata:
 
     """
@@ -44,57 +46,61 @@ class TestMetadata:
     :type  suite: string
     :returns: TestMetadata object
     """
-    def __init__(self, name, ref, severity, ease, isCritical=False,  \
-                 isValid=False, chainable=False, altextend=False, \
-                 functional=False, sslVer=None, caPathPrefix=DEFAULT_CA_PREFIX,\
+
+    def __init__(self, name, ref, severity, ease, isCritical=False,
+                 isValid=False, chainable=False, altextend=False,
+                 functional=False, sslVer=None, caPathPrefix=DEFAULT_CA_PREFIX,
                  testDir=DEFAULT_CERT_DIR, suite=DEFAULT_SUITE):
 
-        self.name         = name;
-        self.ref          = ref;
-        self.severity     = severity;
-        self.ease         = ease;
-        self.isCritical   = isCritical;
-        self.isValid      = isValid;
+        self.name = name
+        self.ref = ref
+        self.severity = severity
+        self.ease = ease
+        self.isCritical = isCritical
+        self.isValid = isValid
 
-        self.suite        = suite;
-        self.sslVer       = sslVer;
+        self.suite = suite
+        self.sslVer = sslVer
 
-        self.chainable    = chainable;
-        self.altextend    = altextend;
-        self.functional   = functional;
+        self.chainable = chainable
+        self.altextend = altextend
+        self.functional = functional
 
-        self.caPathPrefix = caPathPrefix;
-        self.testDir      = testDir;
+        self.caPathPrefix = caPathPrefix
+        self.testDir = testDir
 
     """
     Write all metadata attributes to file
     :param path: path of the metadata file
     :type  path: string
     """
+
     def write(self, path=None):
         if (not path):
-            path = os.path.join(self.testDir, self.name, DEFAULT_METADATA_NAME);
-        
+            path = os.path.join(self.testDir, self.name, DEFAULT_METADATA_NAME)
+
         with open(path, 'w+') as f:
-            f.write("%s=%s\n" % ("name", self.name));
-            f.write("%s=%s\n" % ("ref", self.ref));
-            f.write("%s=%s\n" % ("severity", self.severity));
-            f.write("%s=%s\n" % ("ease", self.ease));
-            f.write("%s=%s\n" % ("isCritical", self.isCritical));
-            f.write("%s=%s\n" % ("isValid", self.isValid));
-            f.write("%s=%s\n" % ("suite", self.suite));
-            f.write("%s=%s\n" % ("sslVer", self.sslVer));
-            f.write("%s=%s\n" % ("chainable", self.chainable));
-            f.write("%s=%s\n" % ("altextend", self.altextend));
-            f.write("%s=%s\n" % ("functional", self.functional));
-            f.write("%s=%s\n" % ("caPathPrefix", self.caPathPrefix));
-            f.write("%s=%s\n" % ("testDir", self.testDir));
-    
+            f.write("%s=%s\n" % ("name", self.name))
+            f.write("%s=%s\n" % ("ref", self.ref))
+            f.write("%s=%s\n" % ("severity", self.severity))
+            f.write("%s=%s\n" % ("ease", self.ease))
+            f.write("%s=%s\n" % ("isCritical", self.isCritical))
+            f.write("%s=%s\n" % ("isValid", self.isValid))
+            f.write("%s=%s\n" % ("suite", self.suite))
+            f.write("%s=%s\n" % ("sslVer", self.sslVer))
+            f.write("%s=%s\n" % ("chainable", self.chainable))
+            f.write("%s=%s\n" % ("altextend", self.altextend))
+            f.write("%s=%s\n" % ("functional", self.functional))
+            f.write("%s=%s\n" % ("caPathPrefix", self.caPathPrefix))
+            f.write("%s=%s\n" % ("testDir", self.testDir))
+
     def load(self, path=None):
-        pass;
+        pass
 
 # Information class that provides user and system setting information
 # to all test cases.
+
+
 class Information:
 
     """
@@ -117,22 +123,25 @@ class Information:
     :type  metadata: Metadata object
     :returns: Information object
     """
-    def __init__(self, log, caPathPrefix=DEFAULT_CA_PREFIX, \
-                 testDir=DEFAULT_CERT_DIR, caPassword=None, addr=None,\
+
+    def __init__(self, log, caPathPrefix=DEFAULT_CA_PREFIX,
+                 testDir=DEFAULT_CERT_DIR, caPassword=None, addr=None,
                  port=None, kSize=None, metadata=None):
 
-        self.caPathPrefix = caPathPrefix;
-        self.testDir      = testDir;
-        self.caPassword   = caPassword;
+        self.caPathPrefix = caPathPrefix
+        self.testDir = testDir
+        self.caPassword = caPassword
 
-        self.addr         = addr;
-        self.port         = port;
-        self.kSize        = kSize;
+        self.addr = addr
+        self.port = port
+        self.kSize = kSize
 
-        self.metadata     = metadata;
-        self.log          = log;
+        self.metadata = metadata
+        self.log = log
 
 # Test case class that represents an individual test case.
+
+
 class TestCase:
 
     """
@@ -147,56 +156,57 @@ class TestCase:
     :type  depth: integer
     :returns: TestCase object
     """
+
     def __init__(self, fqdn, metadata, info, depth=1):
-        self.newTestCase(fqdn, metadata, info, depth);
+        self.newTestCase(fqdn, metadata, info, depth)
 
     def newTestCase(self, fqdn, metadata, info, depth):
-        self.fqdn = fqdn;
-        self.metadata = info.metadata if info.metadata else metadata;
-        self.info =  info;
-        self.depth = depth;
+        self.fqdn = fqdn
+        self.metadata = info.metadata if info.metadata else metadata
+        self.info = info
+        self.depth = depth
 
         if (info.caPathPrefix):
-            self.metadata.caPathPrefix = info.caPathPrefix;
+            self.metadata.caPathPrefix = info.caPathPrefix
         if (info.testDir):
-            self.metadata.testDir = info.testDir;
+            self.metadata.testDir = info.testDir
 
-        self.certs = [];
-        pKey = pSubj = None;
-        i = 1;
+        self.certs = []
+        pKey = pSubj = None
+        i = 1
         while (depth > 0):
-            extensions = [];
+            extensions = []
 
             if (depth > 1):
-                certName = getIntCAName(i);
-                certPathPrefix = os.path.join(self.getCertDir(), certName);
-                extensions.append(BasicConstraint(True));
-                extensions.append(KeyUsage(keyCertSign=True, cRLSign=True));
+                certName = getIntCAName(i)
+                certPathPrefix = os.path.join(self.getCertDir(), certName)
+                extensions.append(BasicConstraint(True))
+                extensions.append(KeyUsage(keyCertSign=True, cRLSign=True))
             else:
-                certName = fqdn;
-                certPathPrefix = os.path.join(self.getCertDir(),\
-                                              self.metadata.name);
+                certName = fqdn
+                certPathPrefix = os.path.join(self.getCertDir(),
+                                              self.metadata.name)
 
             if (self.getDepth() == 0):
-                signer = CertSign(self.getCAPathPrefix(),\
-                                  keyPassword=self.info.caPassword);
+                signer = CertSign(self.getCAPathPrefix(),
+                                  keyPassword=self.info.caPassword)
             else:
-                signer = CertSign(None, pKey, pSubj);
+                signer = CertSign(None, pKey, pSubj)
 
             if (info.kSize):
-                security = CertSec(certName, kSize=info.kSize);
+                security = CertSec(certName, kSize=info.kSize)
             else:
-                security = CertSec(certName);
+                security = CertSec(certName)
 
-            cert = Certificate(certPathPrefix, signer, security, extensions);
-            pKey = cert.security.certKey;
-            pSubj = cert.subject.getSubject();
-            self.certs.append(cert);
+            cert = Certificate(certPathPrefix, signer, security, extensions)
+            pKey = cert.security.certKey
+            pSubj = cert.subject.getSubject()
+            self.certs.append(cert)
 
-            depth -= 1;
-            i += 1;
+            depth -= 1
+            i += 1
 
-        return self;
+        return self
 
     """
     Test preparation that make sure the destination folder is ready
@@ -204,41 +214,44 @@ class TestCase:
     :type  replace: boolean
     :returns: boolean
     """
-    def testPrep(self, replace = False):
+
+    def testPrep(self, replace=False):
         if (replace and os.path.exists(self.getCertDir())):
-            shutil.rmtree(self.getCertDir());
+            shutil.rmtree(self.getCertDir())
         if (not os.path.exists(self.getCertDir())):
-            os.mkdir(self.getCertDir());
-            replace = True;
-        return replace;
+            os.mkdir(self.getCertDir())
+            replace = True
+        return replace
 
     """
     Build test if necessary
     :param replace: assert if erasing previous test case files
     :type  replace: boolean
     """
-    def testBuild(self, replace = False):
+
+    def testBuild(self, replace=False):
         if (self.testPrep(replace)):
-            self.procedure();
+            self.procedure()
 
     """
     Build all certificates in the test case by calling corresponding build()
     methods and write the key file of the last certificate to hard disk
     """
+
     def procedure(self):
-        lastCert = None;
-        i = 1;
+        lastCert = None
+        i = 1
 
         for cert in self.certs:
-            cert.security.build();
-            cert.signer.build();
-            cert = self.preCertBuild(cert, i);
-            cert.build();
-            lastCert = cert;
-            i += 1;
+            cert.security.build()
+            cert.signer.build()
+            cert = self.preCertBuild(cert, i)
+            cert.build()
+            lastCert = cert
+            i += 1
 
-        lastCert.writeKey(self.getKeyPath());
-        self.metadata.write();
+        lastCert.writeKey(self.getKeyPath())
+        self.metadata.write()
 
     """
     Function to override if the test case requires certain procedure to be
@@ -249,25 +262,27 @@ class TestCase:
     :type  idx: integer
     :returns: Certificate object
     """
+
     def preCertBuild(self, cert, idx):
-        return cert;
+        return cert
 
     """
-    Replace the specified CA with another certificate; BasicConstraint and 
+    Replace the specified CA with another certificate; BasicConstraint and
     KeyUsage extensions will be correctly added to form a valid CA
     :param idx: index of the CA in the chain to be replaced
     :type  idx: integer
     :param cert: the successor certificate
     :type  cert: Certificate object
     """
-    def replaceCA(self, idx, cert):
-        cert.certPathPrefix = os.path.join(self.getCertDir(),\
-                                           self.certs[idx].security.fqdn);
-        cert.addExtension(BasicConstraint(True));
-        cert.addExtension(KeyUsage(keyCertSign=True, cRLSign=True));
 
-        self.certs[idx] = cert;
-        self.certs[idx+1].signer.signKey = cert.security.certKey;
+    def replaceCA(self, idx, cert):
+        cert.certPathPrefix = os.path.join(self.getCertDir(),
+                                           self.certs[idx].security.fqdn)
+        cert.addExtension(BasicConstraint(True))
+        cert.addExtension(KeyUsage(keyCertSign=True, cRLSign=True))
+
+        self.certs[idx] = cert
+        self.certs[idx + 1].signer.signKey = cert.security.certKey
 
     """
     Add AltName extensions to all certificates in the test case; the new
@@ -275,162 +290,183 @@ class TestCase:
     :param critical: assert if critical extension
     :type  critical: boolean
     """
+
     def includeAltName(self, critical=True):
         for cert in self.certs:
             try:
-                cert.addExtension(SubjectAltName(critical=critical));
+                cert.addExtension(SubjectAltName(critical=critical))
             except:
-                pass;
+                pass
             cert.getExtension(SubjectAltName).field['DNS'].\
-             append(cert.security.fqdn);
+                append(cert.security.fqdn)
 
     """
     Get the number of certificates chained in this test case
     (excluding the root CA)
     :returns: integer
     """
+
     def getDepth(self):
-        return len(self.certs);
+        return len(self.certs)
 
     """
     Get the first CA (the one immediately signed by the root CA)
     :returns: Certificate object
     """
+
     def getFirstCA(self):
-        return self.certs[0] if self.getDepth() > 1 else None;
+        return self.certs[0] if self.getDepth() > 1 else None
 
     """
     Get the second CA (the one immediately signed by the first CA)
     :returns: Certificate object
     """
+
     def getSecondCA(self):
-        return self.certs[1] if self.getDepth() > 2 else None;
+        return self.certs[1] if self.getDepth() > 2 else None
 
     """
     Get the leaf CA (the one that directly signs the server certificate)
     :returns: Certificate object
     """
+
     def getEdgeCA(self):
-        return self.certs[-2] if self.getDepth() > 2 else None;
+        return self.certs[-2] if self.getDepth() > 2 else None
 
     """
     Get the server certificate (the one used in SSL/TLS key agreement)
     :returns: Certificate object
     """
+
     def getServCert(self):
-        return self.certs[-1];
+        return self.certs[-1]
 
     """
     Get the cipher suite used in this test case
     :returns: string
     """
+
     def getCipherSuite(self):
-        return self.metadata.suite;
+        return self.metadata.suite
 
     """
     Get the SSL/TLS version used in this test case
     :returns: pyOpenSSL macro
     """
+
     def getSSLVersion(self):
-        return self.metadata.sslVer;
+        return self.metadata.sslVer
 
     """
     Get if the test can form a new chained test case
     :returns: boolean
     """
+
     def isChainable(self):
-        return self.metadata.chainable;
+        return self.metadata.chainable
 
     """
     Get if the test can form a new altname test case
     :returns: boolean
     """
+
     def isAltExtend(self):
-        return self.metadata.altextend;
+        return self.metadata.altextend
 
     """
     Get if the test case checks functionality instead of certificate validation
     :returns: boolean
     """
+
     def isFunctional(self):
-        return self.metadata.functional;
+        return self.metadata.functional
 
     """
     Get the directory path that holds the test files
     :returns: string
     """
+
     def getCertDir(self):
-        return os.path.join(self.metadata.testDir, self.metadata.name, "");
+        return os.path.join(self.metadata.testDir, self.metadata.name, "")
 
     """
     Get the file path of the final PEM file to send
     :returns: string
     """
+
     def getPemPath(self):
-        return os.path.join(self.getCertDir(), DEFAULT_PEM_NAME);
+        return os.path.join(self.getCertDir(), DEFAULT_PEM_NAME)
 
     """
     Get the file path of the server certificate keys for the server
     :returns: string
     """
+
     def getKeyPath(self):
-        return os.path.join(self.getCertDir(), DEFAULT_KEY_NAME);
+        return os.path.join(self.getCertDir(), DEFAULT_KEY_NAME)
 
     """
     Get the path prefix of the root CA
     :returns: string
     """
+
     def getCAPathPrefix(self):
-        return self.metadata.caPathPrefix;
+        return self.metadata.caPathPrefix
 
     """
     Get if the test case is a positive test (a test that is valid)
     :returns: boolean
     """
+
     def getTestType(self):
-        return self.metadata.isValid;
+        return self.metadata.isValid
 
     """
     Get if the test case has feature support implication when failed
     :returns: boolean
     """
+
     def getCritical(self):
-        return self.metadata.isCritical;
+        return self.metadata.isCritical
 
     """
     Get the authentic reference that describe the correct behavior
     :returns: string
     """
+
     def getReference(self):
-        return self.metadata.ref;
+        return self.metadata.ref
 
     """
     Get the name of the test case
     :returns: string
     """
+
     def getTestName(self):
-        return self.metadata.name;
+        return self.metadata.name
 
     """
     Get the severity if the test case failed
     :returns: Definitions macro
     """
+
     def getSeverity(self):
-        return self.metadata.severity;
+        return self.metadata.severity
 
     """
     Get the ease of execution
     :returns: Definitions macro
     """
+
     def getEaseOfExec(self):
-        return self.metadata.ease;
+        return self.metadata.ease
 
     """
     Prints a message depends on the test case result
     """
+
     def printMsg(self, passed):
         if (not passed and not self.getCritical()):
-            self.info.log("- severity: " + self.getSeverity() + "; ease: "\
-                          + self.getEaseOfExec() + "; see " +\
-                          self.getReference());
-
+            self.info.log("- severity: " + self.getSeverity() + "; ease: "
+                          + self.getEaseOfExec() + "; see " +
+                          self.getReference())
