@@ -6,7 +6,7 @@ the program in a terminal by typing "python3 Run.py"
 Created on Sep 3, 2014
 """
 
-from src.Terminal import *;
+from src.Terminal import *
 
 if (__name__ == "__main__"):
-    Terminal().runTest();
+    Terminal().runTest()
