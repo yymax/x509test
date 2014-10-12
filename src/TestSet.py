@@ -13,6 +13,8 @@ Created on Sep 3, 2014
 from src.TestCases import *
 from src.TestExpander import *
 from src.TestFunctionality import *
+from src.TestOverflow import *
+
 
 # TestSet class represents an ordered list of test case OBJECT
 # readily available for execution.
@@ -63,6 +65,13 @@ class TestSet:
             cases = self.getAllTestCases(TestCase)
             for test in cases:
                 self.addTestCase(test, self.opt.replace)
+                
+        if (self.opt.compOverflow):
+            self.opt.log("Building Overflow Test Cases...")
+            cases = TestOverflow(self.fqdn, self.info, OVERFLOW_VALID_CA).build().\
+                getTestCases()
+            for test in cases:
+                self.addTestCase(test, self.opt.replace)
 
         self.baseCase = ValidCert(self.fqdn, self.info)
         self.baseCase.testBuild(False)
@@ -111,7 +120,7 @@ class TestSet:
         if (self.opt.replace):
             if (len(os.listdir(self.info.testDir)) != 0 and
                 not os.path.exists(os.path.join(self.info.testDir,
-                                                ValidCert.__name__))):
+                                                DEFAULT_METADATA_NAME))):
                 raise Exception("Please manually remove items in directory %s"
                                 % (self.info.testDir))
             shutil.rmtree(self.info.testDir)
@@ -119,6 +128,10 @@ class TestSet:
             os.remove(DEFAULT_SERIAL_PATH)
         with open(DEFAULT_SERIAL_PATH, 'w+') as f:
             f.write(str(DEFAULT_SERIAL))
+        with open(os.path.join(self.info.testDir, 
+         DEFAULT_METADATA_NAME), 'w+') as f:
+            f.write('Test Directory')
+
 
     """
     Make sure that the KEY, CRT, and PEM file of the root CA exists
@@ -288,4 +301,6 @@ class TestSet:
         if (VERBOSE):
             self.opt.log("adding " + str(testCase.getTestName()))
         testCase.testBuild(replace)
-        self.testCases.append(testCase)
+        
+        if (not (testCase.getTestName() in self.opt.exclude)):
+            self.testCases.append(testCase)

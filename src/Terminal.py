@@ -46,7 +46,7 @@ class Terminal:
                           " comma separated name-list without spaces")
         parser.add_option("-c", "--component", dest="comp",
                           help="specify components to run;" +
-                          " possible values are full, func, [cert]")
+                          " possible values are full, func, [cert], overflow")
 
         parser.add_option("-p", "--port", dest="port",
                           type="int", default=DEFAULT_PORT,
@@ -113,7 +113,7 @@ class Terminal:
         self.caPathPrefix = opt.caPathPrefix
         self.testDir = opt.testDir
         self.caPassword = opt.caPassword
-        self.compCert, self.compFunc = self.getComp(opt.comp)
+        self.compCert, self.compFunc, self.compOverflow = self.getComp(opt.comp)
         self.conly = opt.conly
         self.pver = opt.pver
 
@@ -167,18 +167,20 @@ class Terminal:
         return stream
 
     def getComp(self, comp):
-        compCert = compFunc = False
+        compCert = compFunc = compOverflow = False
 
-        if (not comp):
+        if (not comp or comp == "cert"):
             compCert = True
         elif (comp == "func"):
             compFunc = True
+        elif (comp == "overflow"):
+            compOverflow = True
         elif (comp == "full"):
-            compCert = compFunc = True
+            compCert = compFunc = compOverflow = True
         else:
             raise Exception("Invalid selection value: " + comp)
 
-        return compCert, compFunc
+        return compCert, compFunc, compOverflow
 
     """
     Output stream callback function

@@ -22,7 +22,7 @@ import queue
 from OpenSSL import *
 
 # current version of this software; should be updated for each modification
-SOFTWARE_VERSION = "0.1.0"
+SOFTWARE_VERSION = "0.2.0"
 
 # current version of test case; should be updated for each modification
 TEST_VERSION = "1.0"
@@ -93,6 +93,10 @@ FUNC_CIPHER_SUITES = ["DEFAULT", "HIGH", "MEDIUM",
                       "LOW", "aNULL", "eNULL"]
 FUNC_SSL_VERSIONS = [SSL.TLSv1_2_METHOD, SSL.TLSv1_1_METHOD,
                      SSL.TLSv1_METHOD, SSL.SSLv3_METHOD]
+
+# overflow test set
+OVERFLOW_VALID_CA = True
+OVERFLOW_LENGTH = 128
 
 # debugging options
 VERBOSE = False

@@ -36,6 +36,8 @@ class TestMetadata:
     :type  altextend: boolean
     :param functional: assert if functionality test case (inherently positive)
     :type  functional: boolean
+    :param overflow: assert if overflow test case (inherently negative)
+    :type  overflow: boolean
     :param sslVer: the SSL/TLS handshake used in this connection
     :type  sslVer: pyOpenSSL macro
     :param caPathPrefix: the path prefix of the root CA
@@ -49,8 +51,9 @@ class TestMetadata:
 
     def __init__(self, name, ref, severity, ease, isCritical=False,
                  isValid=False, chainable=False, altextend=False,
-                 functional=False, sslVer=None, caPathPrefix=DEFAULT_CA_PREFIX,
-                 testDir=DEFAULT_CERT_DIR, suite=DEFAULT_SUITE):
+                 functional=False, overflow=False, sslVer=None, 
+                 caPathPrefix=DEFAULT_CA_PREFIX, testDir=DEFAULT_CERT_DIR,
+                 suite=DEFAULT_SUITE):
 
         self.name = name
         self.ref = ref
@@ -65,6 +68,7 @@ class TestMetadata:
         self.chainable = chainable
         self.altextend = altextend
         self.functional = functional
+        self.overflow = overflow
 
         self.caPathPrefix = caPathPrefix
         self.testDir = testDir
@@ -91,6 +95,7 @@ class TestMetadata:
             f.write("%s=%s\n" % ("chainable", self.chainable))
             f.write("%s=%s\n" % ("altextend", self.altextend))
             f.write("%s=%s\n" % ("functional", self.functional))
+            f.write("%s=%s\n" % ("overflow", self.overflow))
             f.write("%s=%s\n" % ("caPathPrefix", self.caPathPrefix))
             f.write("%s=%s\n" % ("testDir", self.testDir))
 
@@ -380,6 +385,14 @@ class TestCase:
 
     def isFunctional(self):
         return self.metadata.functional
+
+    """
+    Get if the test case checks overflow instead of certificate validation
+    :returns: boolean
+    """
+
+    def isOverflow(self):
+        return self.metadata.overflow
 
     """
     Get the directory path that holds the test files

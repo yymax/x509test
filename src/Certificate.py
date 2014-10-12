@@ -590,7 +590,7 @@ class Certificate:
     Build the certificate and write it to hard disk
     :param chainCerts: assert if cert is included in the final PEM file
     :type  chainCerts: boolean
-    :returns: Certificate object
+    :returns: pyOpenSSL Certificate object
     """
 
     def build(self, chainCerts=True):
@@ -644,7 +644,7 @@ class Certificate:
 
     """
     Get this certificate
-    :returns: Certificate object
+    :returns: pyOpenSSL Certificate object
     """
 
     def getCert(self):

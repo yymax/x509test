@@ -162,7 +162,10 @@ class TestServer:
                 res = "? Unsupported"
             else:
                 res = ": Accepted" if passed else "- REJECTED"
-            print("{:>16} {:}".format(test.getTestName(), res))
+            self.opt.log("{:>16} {:}".format(test.getTestName(), res))
+        elif (test.isOverflow()):
+            res = "Terminated" if passed else "Connected"
+            self.opt.log(test.getTestName() + ": " + res)
         else:
             if ((passed and not self.opt.quiet) or not passed):
                 if (passed is None):
@@ -205,7 +208,7 @@ class TestServer:
             passed = self.execute(server, test, sslVer)
             self.output(passed, test)
 
-            if (not test.isFunctional()):
+            if (not test.isFunctional() and not test.isOverflow()):
                 nfails += 0 if passed else 1
                 ntests += 1
 

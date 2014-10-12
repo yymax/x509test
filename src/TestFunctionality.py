@@ -19,7 +19,7 @@ class TestFunctionality:
 
     """
     TestFunctionality constructor
-    :param fqdn: name of the test case
+    :param fqdn: fully quantifiable domain name
     :type  fqdn: string
     :param info: other information for the test session
     :type  info: Information object

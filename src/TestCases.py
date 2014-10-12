@@ -57,10 +57,10 @@ from src.TestGroups import *
 
 class ValidCert(TestCase):
 
-   """A valid certificate, signed directly by the root CA, that contains its
-   fqdn in the CN."""
-
-   def __init__(self, fqdn, info):
+    """A valid certificate, signed directly by the root CA, that contains its
+    fqdn in the CN."""
+    
+    def __init__(self, fqdn, info):
         metadata = TestMetadata(self.__class__.__name__, None, None, None,
                                 True, True)
         super(self.__class__, self).__init__(fqdn, metadata, info)
@@ -314,9 +314,10 @@ class InvalidIntCAKeyUsage(TestCaseChained):
         super(self.__class__, self).__init__(fqdn, metadata, info)
 
         self.getFirstCA().getExtension(KeyUsage).field['keyCertSign'] = False
+        self.getFirstCA().getExtension(KeyUsage).field['digitalSignature'] = True
+        self.getFirstCA().getExtension(KeyUsage).field['keyEncipherment'] = True
 
-
-class MissingIntCABasicConstraint(TestCaseChained):
+class MissingIntCABasicConstraintWithCertSign(TestCaseChained):
 
     """A chain of certificates where the first intermediate CA has keyCertSign
     marked as true in the key usage extension but lacks the basic constraint
