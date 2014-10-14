@@ -18,11 +18,12 @@ import select
 import time
 import copy
 import subprocess
+import math
 import queue
 from OpenSSL import *
 
 # current version of this software; should be updated for each modification
-SOFTWARE_VERSION = "0.2.0"
+SOFTWARE_VERSION = "0.2.1"
 
 # current version of test case; should be updated for each modification
 TEST_VERSION = "1.0"
@@ -64,6 +65,7 @@ HOUR_DISCREPANCY = 48
 DEFAULT_CA_NAME = "verify.x509.test"
 DEFAULT_SERIAL = 1001
 DEFAULT_METADATA_NAME = "metadata"
+DEFAULT_PAUSE = 0
 
 # rank macros for severity
 SEV_HIGH = "High"
@@ -96,7 +98,7 @@ FUNC_SSL_VERSIONS = [SSL.TLSv1_2_METHOD, SSL.TLSv1_1_METHOD,
 
 # overflow test set
 OVERFLOW_VALID_CA = True
-OVERFLOW_LENGTH = 128
+DEFAULT_OVERFLOW_LENGTH = 640000
 
 # debugging options
 VERBOSE = False

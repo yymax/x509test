@@ -68,8 +68,8 @@ class TestSet:
                 
         if (self.opt.compOverflow):
             self.opt.log("Building Overflow Test Cases...")
-            cases = TestOverflow(self.fqdn, self.info, OVERFLOW_VALID_CA).build().\
-                getTestCases()
+            cases = TestOverflow(self.fqdn, self.info, self.opt.overflowLen, 
+                                 OVERFLOW_VALID_CA).build().getTestCases()
             for test in cases:
                 self.addTestCase(test, self.opt.replace)
 

@@ -1,7 +1,11 @@
 Software
+0.2.1
+: Minor update
++ Added time gap configuration
+= Modified overflow component
 0.2.0
 : First release
-+ Overflow component
++ Added overflow component
 = Source code sytle improvement
 = Minor bug fixes
 0.1.0

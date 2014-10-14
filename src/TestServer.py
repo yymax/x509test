@@ -67,6 +67,8 @@ class TestServer:
     """
 
     def runTest(self, server, test, sslVer):
+        time.sleep(self.opt.pause)
+
         try:
             sslVer = test.getSSLVersion() if test.getSSLVersion() else sslVer
             ctx = SSL.Context(sslVer)

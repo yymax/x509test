@@ -20,15 +20,18 @@ class TestOverflow:
     :type  fqdn: string
     :param info: other information for the test session
     :type  info: Information object
+    :param length: byte length of the overflow filler
+    :type  length: integer
     :param validCA: asssert if the CA of this test set is valid
     :type  validCA: boolean
     :returns: TestOverflow object
     """
 
-    def __init__(self, fqdn, info, validCA=True):
+    def __init__(self, fqdn, info, length=DEFAULT_OVERFLOW_LENGTH, validCA=True):
         self.fqdn = fqdn
         self.info = copy.copy(info)
         self.info.metadata = None
+        self.overflowLen = length
         self.validCA = validCA
 
         self.step = 0
@@ -102,18 +105,16 @@ class TestOverflow:
         if (comp._value == b'\x05\x00'):
             comp._value = b'\x07\x01'
         string = self.getFiller()
-        comp._value = comp._value[0:1] + bytes([len(string)]) + string
+        comp._value = comp._value[0:1] + string
         
         self.step += 1
         return cert
 
     def getFiller(self):
         if (self.filler is None):
-            self.filler = b''
-            cnt = OVERFLOW_LENGTH
-            
-            for i in range(cnt):
-                self.filler += bytes([cnt-i])
+            bLen = math.ceil(math.log2(self.overflowLen+1)/8)
+            self.filler = bytes([128+bLen]) + \
+              self.overflowLen.to_bytes(bLen, 'big') + b'a'*self.overflowLen
                 
         return self.filler
 

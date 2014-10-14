@@ -54,7 +54,13 @@ class Terminal:
         parser.add_option("", "--key-length", dest="kSize",
                           type="int", default=DEFAULT_KSIZE,
                           help="key length for all certificates")
-
+        parser.add_option("", "--overflow-length", dest="overflowLen",
+                          type="int", default=DEFAULT_OVERFLOW_LENGTH,
+                          help="byte length of the overflow filler")
+        parser.add_option("", "--pause", dest="pause",
+                          type="int", default=DEFAULT_PAUSE,
+                          help="number of seconds between each test case")
+        
         parser.add_option("-r", "--replace", action="store_true",
                           dest="replace", default=False,
                           help="rebuild all test certificates (NOTE: this" +
@@ -102,6 +108,8 @@ class Terminal:
         self.addr = opt.addr
         self.port = opt.port
         self.kSize = opt.kSize
+        self.overflowLen = opt.overflowLen
+        self.pause = opt.pause
         self.serv = opt.serv
         self.sslVer = self.getSSLVer(opt.sver)
         self.exclude = self.getExclude(opt.exclude, opt.include)
