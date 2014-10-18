@@ -231,7 +231,7 @@ class TestOverflow:
 
 
     def getFiller(self, size):
-        bLen = math.ceil(math.log2(size+1)/8)
+        bLen = math.ceil((math.log(size+1)/math.log(2))/8)
         filler = bytes([128+bLen]) + \
           size.to_bytes(bLen, 'big') + b'a'*size
                 
