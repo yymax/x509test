@@ -23,10 +23,10 @@ import queue
 from OpenSSL import *
 
 # current version of this software; should be updated for each modification
-SOFTWARE_VERSION = "0.2.1"
+SOFTWARE_VERSION = "0.2.2"
 
 # current version of test case; should be updated for each modification
-TEST_VERSION = "1.0"
+TEST_VERSION = "1.1"
 
 # default subject field entries other than the CN
 DEFAULT_C = "US"
@@ -57,15 +57,18 @@ DEFAULT_LICENSE_PATH = os.path.join(".", "LICENSE")
 DEFAULT_CA_PREFIX = os.path.join(".", "ca", "ca")
 DEFAULT_CERT_DIR = os.path.join(".", "certs", "")
 
+# other static settings throughout the test
+REPEAT = 3
+HOUR_DISCREPANCY = 48
+INVALID_TRAIL = ".invalid.test"
+NONSTANDARD_OID = "1.3.6.1.4.1.11129.2.5.1"
+
 # other default settings throughout the test
 DEFAULT_NUM_CHAINED = 4
-REPEAT = 3
-INVALID_TRAIL = ".invalid.test"
-HOUR_DISCREPANCY = 48
-DEFAULT_CA_NAME = "verify.x509.test"
 DEFAULT_SERIAL = 1001
-DEFAULT_METADATA_NAME = "metadata"
 DEFAULT_PAUSE = 0
+DEFAULT_CA_NAME = "verify.x509.test"
+DEFAULT_METADATA_NAME = "metadata"
 
 # rank macros for severity
 SEV_HIGH = "High"
@@ -98,6 +101,9 @@ FUNC_SSL_VERSIONS = [SSL.TLSv1_2_METHOD, SSL.TLSv1_1_METHOD,
 
 # overflow test set
 OVERFLOW_VALID_CA = True
+OVERFLOW_CHAIN_LEN = 100
+OVERFLOW_EXT_LEN = 500
+OVERFLOW_OID_MUL = 500
 DEFAULT_OVERFLOW_LENGTH = 640000
 
 # debugging options

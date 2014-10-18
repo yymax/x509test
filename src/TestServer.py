@@ -151,11 +151,12 @@ class TestServer:
         return passed
 
     """
-    Post processing and output of results
+    Post processing and output of results; returns True if any case is removed
     :param passed: assert if test case passed; None for unsupported test case
     :type  passed: boolean/None
     :param test: test case that just ran
     :type  test: TestCase object
+    :returns: boolean
     """
 
     def output(self, passed, test):
@@ -166,8 +167,8 @@ class TestServer:
                 res = ": Accepted" if passed else "- REJECTED"
             self.opt.log("{:>16} {:}".format(test.getTestName(), res))
         elif (test.isOverflow()):
-            res = "Terminated" if passed else "Connected"
-            self.opt.log(test.getTestName() + ": " + res)
+            res = "| Terminated" if passed else ": Connected"
+            self.opt.log("{:>24} {:}".format(test.getTestName(), res))
         else:
             if ((passed and not self.opt.quiet) or not passed):
                 if (passed is None):
@@ -187,6 +188,9 @@ class TestServer:
                         if (isinstance(c, p)):
                             self.opt.log("  > " + str(c.getTestName()))
                             self.testCases.remove(c)
+                return True
+            
+        return False
 
     """
     Run the test server
@@ -206,13 +210,19 @@ class TestServer:
 
         self.opt.log("Server Ready!")
         self.opt.log("")
-        for test in self.testCases:
+        
+        i = 0
+        while (i < len(self.testCases)):
+            test = self.testCases[i]
             passed = self.execute(server, test, sslVer)
-            self.output(passed, test)
+            rm = self.output(passed, test)
 
             if (not test.isFunctional() and not test.isOverflow()):
                 nfails += 0 if passed else 1
                 ntests += 1
+                
+            if (not rm):
+                i += 1
 
         server.close()
 

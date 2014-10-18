@@ -299,8 +299,10 @@ class TestSet:
 
     def addTestCase(self, testCase, replace=False):
         if (VERBOSE):
-            self.opt.log("adding " + str(testCase.getTestName()))
+            self.opt.log("building " + str(testCase.getTestName()))
         testCase.testBuild(replace)
         
         if (not (testCase.getTestName() in self.opt.exclude)):
+            if (VERBOSE):
+                self.opt.log("adding " + str(testCase.getTestName()))
             self.testCases.append(testCase)

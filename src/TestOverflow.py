@@ -14,6 +14,14 @@ from src.TestGroups import *
 
 class TestOverflow:
 
+    NAME_TABLE = ["SignatureAlgorithm", "SubjectAltName", 
+                  "BasicConstraint", "KeyUsage",
+                  "ExtendedKeyUsage", "IssuerC", "IssuerST",
+                  "IssuerL", "IssuerO", "IssuerOU", "IssuerCN", 
+                  "IssuerEmail", "SubjectC", "SubjectST",
+                  "SubjectL", "SubjectO", "SubjectOU", "SubjectCN", 
+                  "SubjectEmail"]
+
     """
     TestOverflow constructor
     :param fqdn: fully quantifiable domain name
@@ -46,21 +54,35 @@ class TestOverflow:
     """
 
     def build(self):
-        baseCase = self.newCase("TestOverflowBaseCase")
+        baseCase = self.newSubstrate("TestOverflowBaseCase")
+        baseCase.getServCert().modifier.hasPreSign = False
         baseCase.testBuild(replace=True)
         cert = baseCase.getServCert().getCert()
         substrate = crypto.dump_certificate(crypto.FILETYPE_ASN1, cert)
         cert = decoder.decode(substrate, asn1Spec=rfc2459.Certificate())[0]
 
-        cnt = self.countBasicAttr(cert)        
+        cnt = self.countBasicAttr(cert)
+        if (cnt != len(TestOverflow.NAME_TABLE)):
+            raise Exception("Attribute count and name table length mismatch")
+        
+        tempCases = []        
         for i in range(cnt):
-            self.cases.append(self.newCase(self.getName(i))) 
+            tempCases.append(self.newSubstrate(self.getName(i))) 
+        tempCases.append(self.getLongChain())
+        tempCases.append(self.getLongExtension())
+#         tempCases.append(self.getLongAttribute())
+        tempCases.append(self.getLongOID())
 
+        for c in tempCases:
+            if (not self.validCA):
+                c.getFirstCA().selfSign()
+            self.cases.append(c)
+            
         return self
 
 
     def getName(self, idx):
-        return "Overflow_" + str(idx)
+        return "Long" + TestOverflow.NAME_TABLE[idx]
 
     """
     Get a new test case substrate
@@ -69,26 +91,20 @@ class TestOverflow:
     :returns: Certificate object
     """
 
-    def newCase(self, name):
+    def newSubstrate(self, name):
         metadata = TestMetadata(name, "", None, None, False, False,
                                 overflow=True)
 
         substrate = TestCaseChained(self.fqdn, metadata, self.info, 2)
         substrate.includeAltName()
         substrate.getServCert().subject.commonName = self.fqdn
-        substrate.getServCert().modifier.hasPreSign = True
-        substrate.getServCert().modifier.preSign = self.preSign
         substrate.getServCert().addExtension(BasicConstraint(False))
         substrate.getServCert().addExtension(KeyUsage(keyEncipherment=True))
         substrate.getServCert().addExtension(ExtendedKeyUsage(serverAuth=True))
         
-        if (not self.validCA):
-            substrate.getFirstCA().security.certKey.build()
-            substrate.getFirstCA().signer = CertSign(
-                None,
-                substrate.getFirstCA().security.certKey,
-                substrate.getFirstCA().subject.getSubject())
-        
+        substrate.getServCert().modifier.hasPreSign = True
+        substrate.getServCert().modifier.preSign = self.preSignSubstrate
+
         return substrate
 
     """
@@ -98,25 +114,129 @@ class TestOverflow:
     :returns: pyasn1 object
     """
 
-    def preSign(self, cert):
+    def preSignSubstrate(self, cert):
         parent, idx = self.getState(cert, queue.Queue(), 0)
         
         comp = parent.getComponentByPosition(idx)
         if (comp._value == b'\x05\x00'):
             comp._value = b'\x07\x01'
-        string = self.getFiller()
+        string = self.getFiller(self.overflowLen)
         comp._value = comp._value[0:1] + string
         
         self.step += 1
         return cert
 
-    def getFiller(self):
-        if (self.filler is None):
-            bLen = math.ceil(math.log2(self.overflowLen+1)/8)
-            self.filler = bytes([128+bLen]) + \
-              self.overflowLen.to_bytes(bLen, 'big') + b'a'*self.overflowLen
+    """
+    Get a long chained test case
+    :returns: Certificate object
+    """
+
+    def getLongChain(self):
+        name = "LongChain"
+        metadata = TestMetadata(name, "", None, None, False, False,
+                                overflow=True)
+
+        substrate = TestCaseChained(self.fqdn, metadata, self.info, 
+                                    OVERFLOW_CHAIN_LEN)
+        substrate.includeAltName()
+
+        return substrate
+
+    """
+    Get a long extension test case
+    :returns: Certificate object
+    """
+
+    def getLongExtension(self):
+        name = "LongExtension"
+        metadata = TestMetadata(name, "", None, None, False, False,
+                                overflow=True)
+
+        substrate = TestCaseChained(self.fqdn, metadata, self.info, 2)
+        substrate.includeAltName(critical=False)
+        base = substrate.getServCert().extensions[0]
+        for _ in range(OVERFLOW_EXT_LEN):
+            substrate.getServCert().extensions.append(base)
+
+        return substrate
+
+#     """
+#     Get a long attribute test case
+#     :returns: Certificate object
+#     """
+# 
+#     def getLongAttribute(self):
+#         name = "Overflow_LongAttribute"
+#         metadata = TestMetadata(name, "", None, None, False, False,
+#                                 overflow=True)
+# 
+#         substrate = TestCaseChained(self.fqdn, metadata, self.info, 2)
+#         substrate.includeAltName()
+#         substrate.getServCert().subject.commonName = self.fqdn
+#         
+#         substrate.getServCert().modifier.hasPreSign = True
+#         substrate.getServCert().modifier.preSign = self.preSignAttribute
+# 
+#         return substrate
+# 
+#     """
+#     Callback function to be executed before signature
+#     :param cert: certificate to be altered in asn1 format
+#     :type  cert: pyasn1 object
+#     :returns: pyasn1 object
+#     """
+# 
+#     def preSignAttribute(self, cert):
+#         comp = cert.getComponentByPosition(0).getComponentByName('extensions').\
+#             getComponentByPosition(0).getComponentByName('extnValue')
+#         string = self.getFiller(self.overflowLen*OVERFLOW_MEGA_MUL)
+#         comp._value = comp._value[0:1] + string
+# 
+#         return cert
+
+    """
+    Get a long attribute test case
+    :returns: Certificate object
+    """
+
+    def getLongOID(self):
+        name = "LongOID"
+        metadata = TestMetadata(name, "", None, None, False, False,
+                                overflow=True)
+
+        substrate = TestCaseChained(self.fqdn, metadata, self.info, 2)
+        substrate.includeAltName(critical=False)
+        
+        substrate.getServCert().modifier.hasPreSign = True
+        substrate.getServCert().modifier.preSign = self.preSignOID
+
+        return substrate
+
+    """
+    Callback function to be executed before signature
+    :param cert: certificate to be altered in asn1 format
+    :type  cert: pyasn1 object
+    :returns: pyasn1 object
+    """
+
+    def preSignOID(self, cert):
+        oid = ((NONSTANDARD_OID + '.') * OVERFLOW_OID_MUL)[:-1]
+        (cert
+         .getComponentByPosition(0)
+         .getComponentByName('extensions')
+         .getComponentByPosition(0)
+         .setComponentByName('extnID',
+            rfc2459.univ.ObjectIdentifier(oid)))
+        return cert
+
+
+    def getFiller(self, size):
+        bLen = math.ceil(math.log2(size+1)/8)
+        filler = bytes([128+bLen]) + \
+          size.to_bytes(bLen, 'big') + b'a'*size
                 
-        return self.filler
+        return filler
+
 
     """
     Get the number basic attributes in the certificate

@@ -651,6 +651,16 @@ class Certificate:
         return self.cert
 
     """
+    Indicate a self-signed certificate
+    """
+    def selfSign(self):
+        self.security.certKey.build()
+        self.signer = CertSign(
+                None,
+                self.security.certKey,
+                self.subject.getSubject())
+
+    """
     Add an extension entry to this certificate
     :param extension: extension to be added to the certificate
     :type  extension: CertExt object

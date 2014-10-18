@@ -1,4 +1,8 @@
 Software
+0.2.2
+: Minor update
+= Modified overflow component
+= Minor bug fixes
 0.2.1
 : Minor update
 + Added time gap configuration
@@ -14,3 +18,7 @@ Software
 TestCase
 1.0
 : Initial set of test cases
+1.1
+: Minor update
++ Added UnknownNonCriticalExtension test case
+= Changed the name of a few test cases

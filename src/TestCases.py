@@ -184,7 +184,7 @@ class InvalidKeyUsage(TestCaseImmed):
         self.getServCert().addExtension(KeyUsage(cRLSign=True))
 
 
-class InvalidCriticalExtension(TestCaseImmed):
+class UnknownCriticalExtension(TestCaseImmed):
 
     """A certificate that has an non-standard critical extension entry."""
 
@@ -204,9 +204,31 @@ class InvalidCriticalExtension(TestCaseImmed):
          .getComponentByName('extensions')
          .getComponentByPosition(0)
          .setComponentByName('extnID',
-            rfc2459.univ.ObjectIdentifier('1.3.6.1.4.1.11129.2.5.1')))
+            rfc2459.univ.ObjectIdentifier(NONSTANDARD_OID)))
         return asnObj
 
+class UnknownNonCriticalExtension(TestCaseImmed):
+
+    """A certificate that has an non-standard non-critical extension entry."""
+
+    def __init__(self, fqdn, info):
+        metadata = TestMetadata(self.__class__.__name__, "RFC5280 4.2",
+                                SEV_LOW, EASE_MED, isValid=True, chainable=True)
+        super(self.__class__, self).__init__(fqdn, metadata, info)
+
+        self.getServCert().modifier.hasPreSign = True
+        self.getServCert().modifier.preSign = self.preSign
+        self.getServCert().addExtension(ExtendedKeyUsage(serverAuth=True,
+                                                         critical=False))
+
+    def preSign(self, asnObj):
+        (asnObj
+         .getComponentByPosition(0)
+         .getComponentByName('extensions')
+         .getComponentByPosition(0)
+         .setComponentByName('extnID',
+            rfc2459.univ.ObjectIdentifier(NONSTANDARD_OID)))
+        return asnObj
 
 class InvalidSelfSign(TestCaseImmed):
 
@@ -217,11 +239,7 @@ class InvalidSelfSign(TestCaseImmed):
                                 SEV_HIGH, EASE_HIGH)
         super(self.__class__, self).__init__(fqdn, metadata, info)
 
-        self.getServCert().security.certKey.build()
-        self.getServCert().signer = CertSign(
-            None,
-            self.getServCert().security.certKey,
-            self.getServCert().subject.getSubject())
+        self.getServCert().selfSign()
 
 
 # Chained Cert Tests ####################################################
@@ -385,11 +403,7 @@ class InvalidIntCASelfSign(TestCaseChained):
                                 SEV_HIGH, EASE_HIGH)
         super(self.__class__, self).__init__(fqdn, metadata, info)
 
-        self.getFirstCA().security.certKey.build()
-        self.getFirstCA().signer = CertSign(
-            None,
-            self.getFirstCA().security.certKey,
-            self.getFirstCA().subject.getSubject())
+        self.getFirstCA().selfSign()
 
 # Wildcard Cert Tests ####################################################
 
@@ -571,8 +585,10 @@ class InvalidNameNullAltNameAndSubj(TestCaseAltName):
         asnObj.getComponentByPosition(0).getComponentByName('extensions').\
             getComponentByPosition(0).setComponentByName('extnValue', val)
 
-        asnObj.getComponentByPosition(0).getComponentByName('subject'). getComponentByPosition(0).getComponentByPosition(
-            5). getComponentByPosition(0).setComponentByName('value', rfc2459.TeletexCommonName(getInvalidNullDomain(self.fqdn). encode('utf-8')))
+        asnObj.getComponentByPosition(0).getComponentByName('subject').\
+            getComponentByPosition(0).getComponentByPosition(
+            5). getComponentByPosition(0).setComponentByName('value', rfc2459.\
+            TeletexCommonName(getInvalidNullDomain(self.fqdn). encode('utf-8')))
 
         return asnObj
 
