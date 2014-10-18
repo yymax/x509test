@@ -126,8 +126,9 @@ class TestSet:
             shutil.rmtree(self.info.testDir)
             os.mkdir(self.info.testDir)
             os.remove(DEFAULT_SERIAL_PATH)
-        with open(DEFAULT_SERIAL_PATH, 'w+') as f:
-            f.write(str(DEFAULT_SERIAL))
+        if (not os.path.exists(DEFAULT_SERIAL_PATH)):
+            with open(DEFAULT_SERIAL_PATH, 'w+') as f:
+                f.write(str(DEFAULT_SERIAL))
         with open(os.path.join(self.info.testDir, 
          DEFAULT_METADATA_NAME), 'w+') as f:
             f.write('Test Directory')
