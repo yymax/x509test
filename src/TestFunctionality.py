@@ -114,8 +114,8 @@ class TestFunctionality:
     def getVersionName(self, sver):
         ver = None
 
-        if (sver is None):
-            ver = SSL.SSLv23_METHOD
+        if (sver == SSL.SSLv23_METHOD):
+            ver = "SSLv23"
         elif (sver == SSL.SSLv2_METHOD):
             ver = "SSLv2"
         elif (sver == SSL.SSLv3_METHOD):
@@ -127,7 +127,7 @@ class TestFunctionality:
         elif (sver == SSL.TLSv1_2_METHOD):
             ver = "TLSv1_2"
         else:
-            forcedExit("Unknown SSL/TLS Version.", self.log)
+            forcedExit("Unknown SSL/TLS Version.", self.info.log)
 
         return ver
 
