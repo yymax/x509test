@@ -1,4 +1,9 @@
 Software
+0.2.3
+: Minor update
++ Added md5 check
+= Modified functionality component
+= Expanded include-only to other components
 0.2.2
 : Minor update
 = Modified overflow component

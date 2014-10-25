@@ -35,12 +35,12 @@ class TestOverflow:
     :returns: TestOverflow object
     """
 
-    def __init__(self, fqdn, info, length=DEFAULT_OVERFLOW_LENGTH, validCA=True):
+    def __init__(self, fqdn, info, overflowLen=DEFAULT_OVERFLOW_LENGTH):
         self.fqdn = fqdn
         self.info = copy.copy(info)
         self.info.metadata = None
-        self.overflowLen = length
-        self.validCA = validCA
+        self.overflowLen = overflowLen
+        self.validCA = OVERFLOW_VALID_CA
 
         self.step = 0
         self.filler = None
@@ -294,6 +294,13 @@ class TestOverflow:
                 parent, idx = self.getState(cert, q, s+1)
         
         return parent, idx
+    
+    def getAllNames(self, tbl, exclude):
+        for name in TestOverflow.NAME_TABLE:
+            if (name not in exclude):
+                tbl[name] = name
+            
+        return tbl
     
     """
     Get the list of test cases created from this object

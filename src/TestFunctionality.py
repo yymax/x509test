@@ -34,16 +34,16 @@ class TestFunctionality:
     :returns: TestFunctionality object
     """
 
-    def __init__(self, fqdn, info, sizes=FUNC_KEY_SIZES, types=FUNC_KEY_TYPES,
-                 suites=FUNC_CIPHER_SUITES, versions=FUNC_SSL_VERSIONS):
+    def __init__(self, fqdn, info):
         self.fqdn = fqdn
         self.info = copy.copy(info)
         self.info.metadata = None
 
-        self.sizes = sizes
-        self.types = types
-        self.suites = suites
-        self.versions = versions
+        self.sizes = FUNC_KEY_SIZES
+        self.types = FUNC_KEY_TYPES
+        self.hashes = FUNC_HASH_TYPES
+        self.suites = FUNC_CIPHER_SUITES
+        self.versions = FUNC_SSL_VERSIONS
         self.cases = []
 
     """
@@ -68,21 +68,27 @@ class TestFunctionality:
 
                 self.cases.append(case)
 
-        for suite in self.suites:
-            mdata = copy.copy(metadata)
-            mdata.name = self.getSuiteName(suite)
-            mdata.suite = suite
+        for version in self.versions:
+            for suite in self.suites:
+                mdata = copy.copy(metadata)
+                mdata.name = self.getSuiteName(version, suite)
+                mdata.sslVer = version
+                mdata.suite = suite
 
-            case = TestCase(self.fqdn, mdata, self.info)
-            self.cases.append(case)
+                case = TestCase(self.fqdn, mdata, self.info)
+                self.cases.append(case)
 
         for version in self.versions:
-            mdata = copy.copy(metadata)
-            mdata.name = self.getVersionName(version)
-            mdata.sslVer = version
+            for digest in self.hashes:
+                mdata = copy.copy(metadata)
+                mdata.name = self.getHashName(version, digest)
+                mdata.sslVer = version
+                mdata.suite = "ALL"
 
-            case = TestCase(self.fqdn, mdata, self.info)
-            self.cases.append(case)
+                case = TestCase(self.fqdn, mdata, self.info)
+                case.getServCert().security.digest = digest
+
+                self.cases.append(case)
 
         return self
 
@@ -94,13 +100,16 @@ class TestFunctionality:
         elif (ktype == crypto.TYPE_DSA):
             name += "DSA"
         else:
-            name += "KEY"
+            forcedExit("Unknown Key Type.", self.log)
         name += "_" + str(size)
 
         return name
 
-    def getSuiteName(self, suite):
-        return "Suite_" + suite
+    def getHashName(self, version, digest):
+        return self.getVersionName(version) + '_' + digest
+
+    def getSuiteName(self, version, suite):
+        return self.getVersionName(version) + '_' + suite
 
     def getVersionName(self, sver):
         ver = None
@@ -121,6 +130,27 @@ class TestFunctionality:
             forcedExit("Unknown SSL/TLS Version.", self.log)
 
         return ver
+
+    def getAllNames(self, tbl, exclude):
+        for ktype in self.types:
+            for size in self.sizes:
+                name = self.getKeyName(ktype, size)
+                if (name not in exclude):
+                    tbl[name] = name
+
+        for version in self.versions:
+            for suite in self.suites:
+                name = self.getSuiteName(version, suite)
+                if (name not in exclude):
+                    tbl[name] = name
+
+        for version in self.versions:
+            for digest in self.hashes:
+                name = self.getHashName(version, digest)
+                if (name not in exclude):
+                    tbl[name] = name
+
+        return tbl
 
     """
     Get the list of test cases created from this object

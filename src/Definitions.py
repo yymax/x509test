@@ -23,7 +23,7 @@ import queue
 from OpenSSL import *
 
 # current version of this software; should be updated for each modification
-SOFTWARE_VERSION = "0.2.2"
+SOFTWARE_VERSION = "0.2.3"
 
 # current version of test case; should be updated for each modification
 TEST_VERSION = "1.1"
@@ -94,6 +94,7 @@ DEFAULT_ADDR = "127.0.0.1"
 # functionality test set
 FUNC_KEY_SIZES = [512, 1024, 2048, 1025]
 FUNC_KEY_TYPES = [crypto.TYPE_RSA]
+FUNC_HASH_TYPES = ["MD5"]
 FUNC_CIPHER_SUITES = ["DEFAULT", "HIGH", "MEDIUM",
                       "LOW", "aNULL", "eNULL"]
 FUNC_SSL_VERSIONS = [SSL.TLSv1_2_METHOD, SSL.TLSv1_1_METHOD,

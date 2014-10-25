@@ -68,8 +68,8 @@ class TestSet:
                 
         if (self.opt.compOverflow):
             self.opt.log("Building Overflow Test Cases...")
-            cases = TestOverflow(self.fqdn, self.info, self.opt.overflowLen, 
-                                 OVERFLOW_VALID_CA).build().getTestCases()
+            cases = TestOverflow(self.fqdn, self.info, self.opt.overflowLen).\
+                build().getTestCases()
             for test in cases:
                 self.addTestCase(test, self.opt.replace)
 
@@ -82,7 +82,13 @@ class TestSet:
 
     @staticmethod
     def getAllNames(exclude):
-        return TestSet.getDescNames({}, TestCase, exclude)
+        tbl = {}
+        tbl = TestSet.getDescNames(tbl, TestCase, exclude)
+        tbl = TestFunctionality("get.metadata.only", Information(None)).\
+            getAllNames(tbl, exclude)
+        tbl = TestOverflow("get.metadata.only", Information(None)).\
+            getAllNames(tbl, exclude)
+        return tbl
 
     @staticmethod
     def getDescNames(arr, root, exclude):
