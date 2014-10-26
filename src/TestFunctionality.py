@@ -100,7 +100,7 @@ class TestFunctionality:
         elif (ktype == crypto.TYPE_DSA):
             name += "DSA"
         else:
-            forcedExit("Unknown Key Type.", self.log)
+            forcedExit("Unknown Key Type.", self.info.log)
         name += "_" + str(size)
 
         return name

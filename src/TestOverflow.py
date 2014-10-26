@@ -21,6 +21,8 @@ class TestOverflow:
                   "IssuerEmail", "SubjectC", "SubjectST",
                   "SubjectL", "SubjectO", "SubjectOU", "SubjectCN", 
                   "SubjectEmail"]
+    
+    NAME_TABLE_EXT = ["LongChain", "LongExtension", "LongOID"]
 
     """
     TestOverflow constructor
@@ -132,7 +134,7 @@ class TestOverflow:
     """
 
     def getLongChain(self):
-        name = "LongChain"
+        name = TestOverflow.NAME_TABLE_EXT[0]
         metadata = TestMetadata(name, "", None, None, False, False,
                                 overflow=True)
 
@@ -148,7 +150,7 @@ class TestOverflow:
     """
 
     def getLongExtension(self):
-        name = "LongExtension"
+        name = TestOverflow.NAME_TABLE_EXT[1]
         metadata = TestMetadata(name, "", None, None, False, False,
                                 overflow=True)
 
@@ -200,7 +202,7 @@ class TestOverflow:
     """
 
     def getLongOID(self):
-        name = "LongOID"
+        name = TestOverflow.NAME_TABLE_EXT[2]
         metadata = TestMetadata(name, "", None, None, False, False,
                                 overflow=True)
 
@@ -296,7 +298,12 @@ class TestOverflow:
         return parent, idx
     
     def getAllNames(self, tbl, exclude):
-        for name in TestOverflow.NAME_TABLE:
+        for i in range(len(TestOverflow.NAME_TABLE)):
+            name = self.getName(i)
+            if (name not in exclude):
+                tbl[name] = name
+                
+        for name in TestOverflow.NAME_TABLE_EXT:
             if (name not in exclude):
                 tbl[name] = name
             
